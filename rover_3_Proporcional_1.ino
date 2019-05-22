@@ -94,11 +94,11 @@ float controlP(float currentPosition, float setpoint)
   int leftspeedPWM = 245*leftspeed/12;
   analogWrite (SP2,rightspeedPWM);
   digitalWrite(M2,LOW);
-  delay(5);
+  delay(5); // ALTERAR
   analogWrite (SP1,leftspeedPWM);
   digitalWrite(M1,LOW);
   Serial.print(countR); Serial.print(" ");Serial.print(countL); Serial.print(" "); Serial.print(currentPosition); Serial.print(" "); Serial.print(erro); Serial.print(" "); Serial.println(rightspeedPWM);
-}
+  }
         analogWrite (SP1,0);
         digitalWrite(M1,LOW);
         analogWrite (SP2,0);
