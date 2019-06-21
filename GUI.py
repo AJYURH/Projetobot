@@ -18,6 +18,8 @@ top.resizable(width = 0, height = 0)
 
 decoded_bytes = 'a'
 
+#LIMPAR VARIAVEIS GLOBAIS
+
 robotStatus = ''
 speedX = 0.0
 speedY = 0.0
