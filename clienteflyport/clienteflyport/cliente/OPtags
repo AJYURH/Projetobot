@@ -1,0 +1,20 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+FlyportTask	C:\Users\aluno\Documents\clienteflyport\cliente\taskFlyport.c	/^void FlyportTask()$/;"	kind:f	line:3
+OnConnectionFailed	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^void OnConnectionFailed(UINT8 ev, UINT16 evinfo)$/;"	kind:f	line:16
+OnConnectionPermLost	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^void OnConnectionPermLost(UINT8 ev, UINT16 evinfo)$/;"	kind:f	line:34
+OnConnectionReestablished	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^void OnConnectionReestablished(UINT8 ev, UINT16 evinfo)$/;"	kind:f	line:28
+OnConnectionSuccessful	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^void OnConnectionSuccessful(UINT8 ev, UINT16 evinfo)$/;"	kind:f	line:9
+OnConnectionTempLost	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^void OnConnectionTempLost(UINT8 ev, UINT16 evinfo)$/;"	kind:f	line:22
+OnScanResult	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^void OnScanResult(UINT8 ev, UINT16 evinfo)$/;"	kind:f	line:41
+ScanCompleted	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^BOOL ScanCompleted = FALSE;$/;"	kind:v	line:7
+UdpRxLength	C:\Users\aluno\Documents\clienteflyport\cliente\taskFlyport.c	/^	int UdpRxLength = 0;$/;"	kind:l	line:19
+UdpSocket	C:\Users\aluno\Documents\clienteflyport\cliente\taskFlyport.c	/^	int UdpSocket = UDPClientOpen("192.168.43.65","5555");$/;"	kind:l	line:18
+buf	C:\Users\aluno\Documents\clienteflyport\cliente\WF_Events.c	/^	char buf[8];$/;"	kind:l	line:44
+flagErr	C:\Users\aluno\Documents\clienteflyport\cliente\taskFlyport.c	/^	BOOL flagErr = FALSE;$/;"	kind:l	line:8
+msg	C:\Users\aluno\Documents\clienteflyport\cliente\taskFlyport.c	/^	char msg[500];$/;"	kind:l	line:6
+myAdcValue	C:\Users\aluno\Documents\clienteflyport\cliente\taskFlyport.c	/^	int myAdcValue = 0;$/;"	kind:l	line:9
