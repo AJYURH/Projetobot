@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import tkinter
+import Tkinter as tkinter
+#from Tkinter import *
 import matplotlib.pyplot as plt
 import PIL.Image
 import PIL
@@ -7,6 +8,10 @@ import PIL.ImageTk
 import time
 import threading
 import serial
+from socket import *
+
+
+
 
 #GUI Root Window
 
@@ -86,29 +91,45 @@ def updater():
         temp1 = timeB[9]+990
 
 
+        #Begin Temp
+
+        ############################################################
+
+        serverSocket = socket(AF_INET, SOCK_DGRAM)
+        portAdress = ('192.168.043.033', 5555)
+        serverSocket.bind(portAdress)
+        print('waiting')
+        tempvalues = serverSocket.recvfrom(1024)
+        print(tempvalues)
+        ############################################################
+
+        #End Temp
+
+
         #Beguin Serial COM
 
         #################################################################################################################################
 
 
         #UNCOMENT
-        '''
-        ser = serial.Serial('/dev/ttyACM0') #set correct port
-        ser.flushInput()
-        '''
+
+        #ser = serial.Serial('/dev/ttyUSB0') #set correct port
+        #ser.boudrate = 9600
+        #ser.flushInput()
+
         #UNCOMENT ABOVE
 
 
         try:
-            #ser_bytes = ser.readline() #UNCOMENT
+            #ser_bytes = ser.readline() #UNCOMENT]
             #decoded_bytes = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))  #UNCOMENT
-            #print(decoded_bytes)
             print(decoded_bytes)
             #decoded_bytes = str('1-684.125-688.111-879.548-215.358-511.010-152.548')
 
             if decoded_bytes[0] == '0':
                 robotStatus = 'Aguardando'
             elif decoded_bytes[0] == '1':
+                print(decoded_bytes)
                 robotStatus = 'Movimentando'
                 poseX = float(decoded_bytes[2:9])
                 poseY = float(decoded_bytes[10:17])
