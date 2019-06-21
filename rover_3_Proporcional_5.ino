@@ -1,7 +1,9 @@
 /* PROJETO ENGG68 - TOPICOS ESPECIAIS EM ENGENHARIA DE COMPUTACAO
    Distancia entre as rodas: 9.2 cm / Circunferncia relizada: 57.8053 cm
-   Passo tangencial da roda: 0.32cm
-   Passo angular: 0.0348 rad
+   Diâmetro das rodas: 3,5 cm / Circunferência da roda 10.9957 cm
+   Passo tangencial da roda: 0.687cm (0.00687m)
+   
+   Passo angular: 0.0747 rad
    
    O rob precisa começar na origem (x=0,y=0) theta=0;
    
@@ -11,9 +13,19 @@
        - acredito precisamos da equação do robô pra isso
        para 7,01cm/s -> 149
        
-       buffer [char flag; float x_setpoint; float y_setpoint; time_t relogio]
+       buffer [char flag; float x_setpoint; float y_setpoint; float theta_setpoint]
        buffer [FF-XXX.XXX-YYY.YYY-ZZZ.ZZZ] (26 posicoes)
-       68-010.000-010.000-000.000
+       368-010.000-010.000-001.500 (primeiro quadrante)
+       368--10.000-010.000-001.500 (segundo quadrante)
+       368-010.000--10.000-001.500 (quarto quadrante)
+       368--10.000--10.000-001.500 (terceiro quadrante)
+
+       368-000.100-000.100-000.000 (primeiro quadrante)
+       368--00.100-000.100-000.500(segundo quadrante)
+       368-000.100--00.100--01.500((quarto quadrante)
+       
+       
+       68-111.111-222.222-333.333
 */
 
 int SP1 = 6; //M1 Speed Control
@@ -30,7 +42,7 @@ int M2 = 7; //M2 Direction Control
   long countL = 0;  
   long countR = 0;
 
-float vMax = 7.01;
+float vMax = 0.0701;
 
 void setup()
 {
@@ -52,32 +64,39 @@ void setup()
 
 
 //*******************************************Corrige a orientação do robô********************************************
-float orientacao(float currentPosition[2], float setpoint[2], float currentTheta)
+float orientacao(float currentTheta, float thetaSP)
 {
   float rightspeed=0;
   float leftspeed = 0;
-  float thetaSP = atan2(setpoint[0],setpoint[1]);
-  
   int rightspeedPWM=0;
   int leftspeedPWM=0;
-  
- // float dot = currentPosition[0]*setpoint[0] + currentPosition[1]*setpoint[1];      //dot product between [x1, y1] and [x2, y2]
-//  float det = currentPosition[0]*setpoint[1] - currentPosition[1]*setpoint[0];      //determinant
- // float angle = atan2(det, dot);        // atan2(y, x) or atan2(sin, cos)
-  float angle = atan2(setpoint[1],setpoint[0]);
-  float erroTheta = angle - currentTheta;
 
+  int rawsensorValueR = 0;
+  int sensorcount0R = 0;
+  int sensorcount1R = 0; 
+  int rawsensorValueL = 0;
+  int sensorcount0L = 0;
+  int sensorcount1L = 0;
+  long countL = 0;  
+  long countR = 0;
+ 
+  Serial.print("Theta do setpoint = "); Serial.println(thetaSP);
+   
+  float erroTheta = thetaSP - currentTheta;
+
+  Serial.print("O erroTheta é: "); Serial.println(erroTheta);
   
   analogWrite (SP2,rightspeedPWM);
   digitalWrite(M2,LOW);
   analogWrite (SP1,leftspeedPWM);
   digitalWrite(M1,LOW);
-  
+  int n=0;
+  float currentTheta1=currentTheta;
   if(erroTheta>0){
-    while(erroTheta>0.1){
+    while(erroTheta>0.02){
         
             //************************************************Leitura do encoder - MOTOR 2 - RIGHT************************************************
-      rawsensorValueR = analogRead(0);
+      rawsensorValueR = analogRead(1);
       if (rawsensorValueR < 600) //Min value is 400 and max value is 800, so state chance can be done at 600.
         sensorcount1R = 1;
       else 
@@ -85,9 +104,14 @@ float orientacao(float currentPosition[2], float setpoint[2], float currentTheta
       if (sensorcount1R != sensorcount0R)
         countR ++;
       sensorcount0R = sensorcount1R;
-      
-      currentTheta=countR*0.0348;
-      erroTheta = angle - currentTheta;
+
+      currentTheta= countR*0.043; 
+      if(n==0){
+        currentTheta = currentTheta1+currentTheta;
+        n=1;
+      }
+ 
+      erroTheta = thetaSP - currentTheta;
       Serial.println(erroTheta);
       
       rightspeedPWM = 100;
@@ -97,10 +121,11 @@ float orientacao(float currentPosition[2], float setpoint[2], float currentTheta
       }
        
   }
-  
+  n=0;
     if(erroTheta<0){
-      while(erroTheta<-0.1){        
-        rawsensorValueL = analogRead(1);
+      while(erroTheta<(-0.02)){       
+        Serial.println("Entrei no while do erro menor que zero"); 
+        rawsensorValueL = analogRead(0);
         if (rawsensorValueL < 600) //Min value is 400 and max value is 800, so state chance can be done at 600.
           sensorcount1L = 1;
         else 
@@ -109,8 +134,14 @@ float orientacao(float currentPosition[2], float setpoint[2], float currentTheta
           countL ++;
         sensorcount0L = sensorcount1L;
       
-      currentTheta=countL*0.0348;
-      erroTheta = angle - currentTheta;
+      Serial.println(erroTheta);
+      currentTheta = currentTheta - countL*0.043;
+      if(n==0){
+        currentTheta = currentTheta1+currentTheta;
+        n=1;
+      }
+      erroTheta = thetaSP - currentTheta;
+      Serial.println(erroTheta);
       
       leftspeedPWM = 100;
 
@@ -130,14 +161,7 @@ float orientacao(float currentPosition[2], float setpoint[2], float currentTheta
      currentTheta = currentTheta+(2*PI);
    
    return currentTheta;  
-    
-/*
-  dot = x1*x2 + y1*y2      # dot product between [x1, y1] and [x2, y2]
-  det = x1*y2 - y1*x2      # determinant
-  angle = atan2(det, dot)  # atan2(y, x) or atan2(sin, cos)
-*/
- 
-  
+      
 }
 
 
@@ -170,10 +194,10 @@ float controlP(float currentPosition, float setpoint)
   float kp = 0.08;
   float ki = 0.008;
  
-  while(erro>0.2)
+  while(erro>0.01)
   {
     //************************************************Leitura do encoder - MOTOR 2 - RIGHT************************************************
-  rawsensorValueR = analogRead(0);
+  rawsensorValueR = analogRead(1);
   if (rawsensorValueR < 600) //Min value is 400 and max value is 800, so state chance can be done at 600.
     sensorcount1R = 1;
   else 
@@ -182,7 +206,7 @@ float controlP(float currentPosition, float setpoint)
     countR ++;
   sensorcount0R = sensorcount1R;
     //************************************************Leitura do encoder - MOTOR 1 - LEFT************************************************
-  rawsensorValueL = analogRead(1);
+  rawsensorValueL = analogRead(0);
   if (rawsensorValueL < 600) //Min value is 400 and max value is 800, so state chance can be done at 600.
     sensorcount1L = 1;
   else 
@@ -191,8 +215,8 @@ float controlP(float currentPosition, float setpoint)
     countL ++;
   sensorcount0L = sensorcount1L;
   //*************************************Controle Proporcional Integral de velocidade*****************************************************
-  currentPositionR = countR*3.14159*0.32;
-  currentPositionL = countL*3.14159*0.32;
+  currentPositionR = countR*0.00687;
+  currentPositionL = countL*0.00687;
   difW = countL - countR;
 
   erroR = setpoint - currentPositionR;
@@ -226,7 +250,7 @@ float controlP(float currentPosition, float setpoint)
     leftspeed = 0;
 
    float speedFoward = (leftspeed+rightspeed)/2;
-   float w = (leftspeed-rightspeed)/9.2; //9.2 é a distância entre as rodas
+   float w = (leftspeed-rightspeed)/0.092; //9.2 cm é a distância entre as rodas
     
   int rightspeedPWM = 149*rightspeed/vMax;
   int leftspeedPWM = 149*leftspeed/vMax;
@@ -253,11 +277,11 @@ void loop()
  
  char comando = 0;
  char buffer_entrada[27];
- char flag[0];
+ int flag[2];
  char in_char;
  
- float currentPosition[2];
- float currentTheta;
+ float currentPosition[2]; currentPosition[0]=0;currentPosition[1]=0; 
+ float currentTheta=0;
  float setpoint[2];
  float setpointFoward =0;
  float currentPositionFoward = 0;
@@ -273,7 +297,7 @@ void loop()
       currentPosition[2]; currentPosition[0]=0; currentPosition[1]=0;
       
       setpointFoward = sqrt(pow(setpoint[0],2) + pow(setpoint[1],2)); //calcula a hipotenusa
-      currentPositionFoward = 0; //RETIRAR ISSO DAQUI, SÓ PARA DEBUG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      currentPositionFoward = 0; //RETIRAR ISSO DAQUI, SÓ PARA DEBUG
    
       currentPositionFoward = controlP(currentPositionFoward,setpointFoward);
       Serial.print("Chegamos ao Ponto 1! CurrentPosition = "); Serial.println(currentPositionFoward);
@@ -302,71 +326,72 @@ void loop()
         digitalWrite(M2,LOW);
         delay(100);
       }
-      if(comando=='3'){
-        Serial.print("Comando 3. Insira o buffer \n");
-        
-        while(!Serial.available() ){
-        }
-        
-      
-         int array_int[27];
-         int incoming_byte;
-         char incoming_char;
-         
-         
-  /*     if(Serial.available()>0){
-          for(int i=0; i<=27; i++){
-            in_char = Serial.read();
-            buffer_entrada[i] = in_char;
-            while(!Serial.available() ){}
-                  }
-          } 
-       
-    */ 
- 
-            if(Serial.available()>0){
-          for(int i=0; i<=26; i++){
-            incoming_char = Serial.read();
-            Serial.print(incoming_char);
-            array_int[i] = incoming_char;
-            while(!Serial.available() ){}
-                  }
-          } 
-          
-        Serial.print("O Buffer recebido foi: "); //Serial.println(array_int);
-        flag[0]= array_int[0]; flag[1]= array_int[1];//flag[2]='3';
-        Serial.print("A flag armazenada e: "); Serial.println(flag);
-        char array_transferencia[7];
-        
-        if(array_int[0]=='6' && array_int[1] =='8'){
-         for(int i=0; i<=7;i++)
-          array_transferencia[i] = array_int[i+3];
-          
-         setpoint[0]=atof(array_transferencia);
-          
-         for(int i =0; i<7; i++)
-          array_transferencia[i] = array_int[i+11];
-          
-         setpoint[1] = atof(array_transferencia);
-                   
-         Serial.print("O resultado da conversao do setpoint (x, y) e: "); Serial.print(setpoint[0]);Serial.print(", ");Serial.println(setpoint[1]);
-         setpointFoward = sqrt(pow(setpoint[0],2) + pow(setpoint[1],2)); //calcula a hipotenusa
-         
-         //chamar funcao de angulo
-         //chamar funcao de deslocamento
-         currentTheta = orientacao(currentPosition, setpoint, currentTheta);
-         // controlP(float currentPosition, float setpoint) 
-         
 
-         currentPosition[0] = currentPosition[0] + currentPositionFoward*cos(currentTheta);
-         currentPosition[1] = currentPosition[1] + currentPositionFoward*sin(currentTheta);
+
+
+
+
+
+      
+      if(comando=='3'){
+        
+        String buffer_in = String(27);
+        int flag;
+        float x_setpoint;
+        float y_setpoint;
+        float theta_final;
+        
+        Serial.print("Comando 3. Insira o buffer \n");
+        delay(100);
+              
+    while( !Serial.available() ){}
+
+    if(Serial.available()>0){ 
+    buffer_in = Serial.readString();
+  
+  
+    flag = buffer_in.substring(0,2).toInt();
+    x_setpoint = buffer_in.substring(3,10).toFloat();
+    y_setpoint = buffer_in.substring(11,18).toFloat();
+    theta_final = buffer_in.substring(19,26).toFloat();
+
+
+    float setpoint[2]; setpoint[0]=x_setpoint; setpoint[1]=y_setpoint;
+    float thetaSP = atan2(setpoint[1],setpoint[0]);
+    float currentTheta1;
+    
+    if(flag == 68 ){
+        Serial.println("deu 68");
+    }
+    
+    Serial.print("Flag: "+String(flag));
+    Serial.print(" x_setpoint: "+ String(x_setpoint));
+    Serial.print(" y_setpoint: "+ String(y_setpoint));
+    Serial.println("theta_final: "+ String(theta_final));
+          
+  
+        // Serial.print("O resultado da conversao do setpoint (x, y) e: "); Serial.print(setpoint[0]);Serial.print(", ");Serial.println(setpoint[1]);
+         setpointFoward = sqrt(pow(x_setpoint,2) + pow(y_setpoint,2)); //calcula a hipotenusa
+         Serial.print("A hipotenusa: "); Serial.println(setpointFoward);
+
+         currentTheta1 = orientacao(currentTheta, thetaSP);
+         Serial.print("Primeira etapa de orientação ok. currentTheta = "); Serial.println(currentTheta1);
+         currentTheta = currentTheta1;         
+         
+         currentPositionFoward = controlP(currentPositionFoward,setpointFoward);
+         Serial.print("Chegada ao setpointFoward. currentPositionFoward = "); Serial.println(currentPositionFoward);
+
+         currentTheta = orientacao(currentTheta1, theta_final);
+         Serial.print("Segunda etapa de orientação ok. currentTheta = "); Serial.println(currentTheta);
+            
+         currentPosition[0] = currentPosition[0] + currentPositionFoward*cos(currentTheta1);
+         currentPosition[1] = currentPosition[1] + currentPositionFoward*sin(currentTheta1);
          Serial.print("Passageiros do voo ENGG68, chegamos ao destino (x,y,theta): "); Serial.print(currentPosition[0]); Serial.print(", "); Serial.print(currentPosition[0]); Serial.print(", "); Serial.print(currentTheta);
           
         }
         
-
+      }
       }
      
      
    }
-}
