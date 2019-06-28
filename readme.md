@@ -1,6 +1,6 @@
-#ProjetoBot
+# ProjetoBot
 
-##Instalação da GUI.py:
+## Instalação da GUI.py:
 * Crie um ambiente virtual com python3:
 ` virtualenv -p python3 myenv `
 
