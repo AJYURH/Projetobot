@@ -9,6 +9,9 @@ import time
 import threading
 import serial
 from socket import *
+import numpy as np
+
+import servidorUdp
 
 #GUI Root Window
 
@@ -38,16 +41,19 @@ temp3 = 0.0
 temp4 = 0.0
 startSeconds = time.time()
 currentSeconds = time.time()
-timeB = [4,7,5,2,0,0,0,0,0,0]
-tempS1 = [20,24,38,39,30,32,37,21,22,29]
-tempS2 = [0,2,4,9,0,0,0,0,0,0]
-tempS3 = [0,2,4,9,0,0,0,0,0,0]
-tempS4 = [0,2,4,9,0,0,0,0,0,0]
-speedSV = [0,0,0,0,0,0,0,0,0,0]
-speedSO = [0,0,0,0,0,0,0,0,0,0]
-poseSX = [0,0,0,0,0,0,0,0,0,0]
-poseSY = [0,0,0,0,0,0,0,0,0,0]
-poseST = [0,0,0,0,0,0,0,0,0,0]
+timeB = np.arange(50)
+#timeB = [4,7,5,2,0,0,0,0,0,0]
+#tempS1 = np.arange (50)
+#tempS1 = [20,24,38,39,30,32,37,21,22,29]
+#tempS2 = [0,2,4,9,0,0,0,0,0,0]
+#tempS3 = [0,2,4,9,0,0,0,0,0,0]
+#tempS4 = [0,2,4,9,0,0,0,0,0,0]
+speedSV = np.arange(50)
+speedSO = np.arange(50)
+poseSX = np.arange(50)
+poseSY = np.arange(50)
+poseST = np.arange(50)
+
 photo = PIL.ImageTk.PhotoImage(PIL.Image.open('rob.jpg'))
 manualOn = (False)
 
@@ -84,6 +90,7 @@ def updater():
     temp3 = 0.0
     temp4 = 0.0
     while(1):
+        
         currentSeconds = time.time()
         time.sleep(1)
         for i in range(9):
@@ -118,20 +125,21 @@ def updater():
         #UNCOMENT
         
         #ser = serial.Serial('/dev/ttyACM0') #set correct port
+        '''
         ser = serial.Serial()
         ser.port = 'COM12'
         ser.boudrate = 9600
         ser.open()
         #ser.flushInput()
         print("open?")
-             
+        '''     
         #UNCOMENT ABOVE
 
         
         try:
-            ser_bytes = ser.readline() #UNCOMENT
-            print("open?")
-            decoded_bytes = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))  #UNCOMENT
+            #ser_bytes = ser.readline() #UNCOMENT
+            #print("open?")
+            #decoded_bytes = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))  #UNCOMENT
             print(decoded_bytes)
             print(decoded_bytes)
             #decoded_bytes = str('1-684.125-688.111-879.548-215.358-511.010')
@@ -205,6 +213,17 @@ def updater():
         temp3Value.grid(row = 3, column = 2, sticky = 'E')
         temp4Value.grid(row = 4, column = 2, sticky = 'E')
         
+#Updater End
+
+#Serial Updater
+
+########################################################################
+
+
+
+########################################################################
+
+#Serial Updater End
 
 #Graph
 
@@ -225,77 +244,125 @@ def graph():
     #plt.figure(2)
     ax2 = fig.add_subplot(332)
     plt.title('Sensor de Temperatura 2')
-    ax2.plot(timeB,tempS2)
+    #ax2.plot(timeB,tempS2)
     plt.xlabel('tempo(s)')
     plt.ylabel('Temperatura (C)')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    plt.axis([timeB[0], timeB[49], 20, 40])
     #plt.figure(3)
     ax3 = fig.add_subplot(333)
     plt.title('Sensor de Temperatura 3')
-    ax3.plot(timeB,tempS3)
+    #ax3.plot(timeB,tempS3)
     plt.xlabel('tempo(s)')
     plt.ylabel('Temperatura (C)')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    plt.axis([timeB[0], timeB[49], 20, 40])
     #plt.figure(4)
     ax4 = fig.add_subplot(334)
     plt.title('Sensor de Temperatura 4')
-    ax4.plot(timeB,tempS4)
+    #ax4.plot(timeB,tempS4)
     plt.xlabel('tempo(s)')
     plt.ylabel('Temperatura (C)')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    print ('asd')
+    plt.axis([timeB[0], timeB[49], 20, 40])
+    print ('sfd')
     #plt.figure(5)
-    ax5 = fig.add_subplot(335)
-    plt.title('Velocidade V/t')
-    ax5.plot(timeB,speedSV)
+    ax5 = fig.add_subplot(335)    
+    plt.title('Velocidade V/t')    
+    #ax5.plot(timeB,speedSV)
     plt.xlabel('tempo(s)')
     plt.ylabel('VelV')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    plt.axis([timeB[0], timeB[49], 20, 40])
     #plt.figure(6)
+    print ('zas')
     ax6 = fig.add_subplot(336)
     plt.title('Velocidade T/t')
-    ax6.plot(timeB,speedSO)
+    #ax6.plot(timeB,speedSO)
     plt.xlabel('tempo(s)')
     plt.ylabel('VelT')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    plt.axis([timeB[0], timeB[49], 20, 40])
     #plt.figure(7)
     ax7 = fig.add_subplot(337)
     plt.title('PoseX/t')
-    ax7.plot(timeB,poseSX)
+    #ax7.plot(timeB,poseSX)
     plt.xlabel('tempo(s)')
     plt.ylabel('PoseX')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    plt.axis([timeB[0], timeB[49], 20, 40])
     #plt.figure(8)
     ax8 = fig.add_subplot(338)
     plt.title('PoseY/t')
-    ax8.plot(timeB,poseSY)
+    #ax8.plot(timeB,poseSY)
     plt.xlabel('tempo(s)')
     plt.ylabel('PoseY')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    plt.axis([timeB[0], timeB[49], 20, 40])
     #plt.figure(9)
     ax9 = fig.add_subplot(339)
     plt.title('PoseT/t')
-    ax9.plot(timeB,poseST)
+    #ax9.plot(timeB,poseST)
     plt.xlabel('tempo(s)')
     plt.ylabel('PoseT')
     #plt.grid(True)
-    plt.axis([timeB[0], timeB[9], 20, 40])
+    plt.axis([timeB[0], timeB[49], 20, 40])
     plt.tight_layout()
     #fig.axis.clear()
     
     while(1):
+        print ('entratemps')
+        servidorUdp.mostraTemps()
         
-        ax1.plot(timeB,tempS1)
-        ax1.axis([timeB[0], timeB[9], 20, 40])
+        print ('entratemps')
+        ax1.plot(timeB,servidorUdp.flys[1].temps)
+        ax1.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+        
+        ax2.plot(timeB,servidorUdp.flys[1].temps)
+        ax2.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+   
+        ax3.plot(timeB,servidorUdp.flys[0].temps)
+        ax3.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+   
+        ax4.plot(timeB,servidorUdp.flys[0].temps)
+        ax4.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+   
+        ax5.plot(timeB,servidorUdp.flys[0].temps)
+        ax5.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+   
+        ax6.plot(timeB,servidorUdp.flys[0].temps)
+        ax6.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+   
+        ax7.plot(timeB,servidorUdp.flys[0].temps)
+        ax7.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+   
+        ax8.plot(timeB,servidorUdp.flys[0].temps)
+        ax8.axis([timeB[0], timeB[49], 20, 40])
+        fig.canvas.draw()
+        #plt.pause(1)
+   
+        ax9.plot(timeB,servidorUdp.flys[0].temps)
+        ax9.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         plt.pause(1)
-        ax1.axes.lines[0].remove()
+        #ax1.axes.lines[0].remove()
+        #ax2.axes.lines[0].remove()
+   
     print('end')
 
     
@@ -385,6 +452,9 @@ def openManual():
 thread = threading.Thread(target=updater)
 thread.daemon = True                            # Daemonize thread
 thread.start() 
+
+threadTemp =threading.Thread(target=servidorUdp.iniciaLeitura,args=(),daemon=False)
+threadTemp.start()
 '''
 thread = threading.Thread(target=serialUpdater)
 thread.daemon = True                            # Daemonize thread
@@ -427,13 +497,13 @@ tempData = tkinter.Label(box1, anchor = 'w', text = "Dados de Temperatura", padx
                 #RoboData
 speedVL = tkinter.Label(robotDataBox, text = "Robot speed v:")
 speedOL = tkinter.Label(robotDataBox, text = "Robot speed o:")
-#speedTL = tkinter.Label(robotDataBox, text = "Robot speed Θ:" )
+#speedTL = tkinter.Label(robotDataBox, text = "Robot speed T:" )
 speedVValue = tkinter.Label(robotDataBox, text = '%s' % (speedV))
 speedOValue = tkinter.Label(robotDataBox, text = '%s' % (speedO))
 #speedTValue = tkinter.Label(robotDataBox, text = '%s' % (speedT))
 poseXL = tkinter.Label(robotDataBox, text = "Robot position x:")
 poseYL = tkinter.Label(robotDataBox, text = "Robot position y:")
-poseTL = tkinter.Label(robotDataBox, text = "Robot position Θ:")
+poseTL = tkinter.Label(robotDataBox, text = "Robot position T:")
 poseXValue = tkinter.Label(robotDataBox, text = '%s' % (poseX))
 poseYValue = tkinter.Label(robotDataBox, text = '%s' % (poseY))
 poseTValue = tkinter.Label(robotDataBox, text = '%s' % (poseT))
