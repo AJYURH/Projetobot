@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-#import Tkinter as tkinter
-import tkinter
+import Tkinter as tkinter
+#import tkinter
 import matplotlib.pyplot as plt
 import PIL.Image
 import PIL
@@ -13,7 +13,7 @@ import numpy as np
 #graph new
 import matplotlib
 matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg,NavigationToolbar2Tk
+#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg,NavigationToolbar2Tk
 from matplotlib.figure import Figure
 import matplotlib.animation as animation
 from matplotlib import style
@@ -105,13 +105,13 @@ def updater():
     temp3 = 0.0
     temp4 = 0.0
     while(1):
-        
+
         currentSeconds = time.time()
         time.sleep(1)
         for i in range(49):
-            timeB[i]=timeB[i+1] 
+            timeB[i]=timeB[i+1]
         timeB[49] = int (currentSeconds-startSeconds)
-        print(timeB)        
+        print(timeB)
         #speedX = timeB[9]+990
         temp1 = timeB[9]+990
 
@@ -138,45 +138,52 @@ def updater():
 
 
         #UNCOMENT?
-        
+
         #ser = serial.Serial('/dev/ttyACM0') #set correct port
-        ''' #UNCOMENT
+         #UNCOMENT
         ser = serial.Serial()
-        ser.port = 'COM12'
+        #ser.port = 'COM12'
+        ser.port = '/dev/ttyUSB0'
         ser.boudrate = 9600
         ser.open()
         #ser.flushInput()
         print("open?")
-             
+        '''
         ser2 = serial.Serial()
         ser.port = 'COM11'
         ser.boudrate = 9600
         ser.open()
         #ser.flushInput()
         print("open?")
-        #UNCOMENT ABOVE
         '''
-        
+        #UNCOMENT ABOVE
+        print ('chegou?')
+
+        ser.write(b'0-000.100-000.100-000.500\n')
+        ser.read()
+        linec =0
         try:
-            if (linec == 0):  #IF MUST READ ON SAME CICLE include while linec <6 and set linec to 0 after that
-                #robotStatusVerif = ser.readline()#UNCOMENT
-                #robotStatusVerif = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8")) #UNCOMENT?
-                linec = linec + 1
-            elif (linec == 1):
-                #poseX = ser.readline()#UNCOMENT
-                linec = linec + 1
-            elif (linec == 2):
-                #poseY = ser.readline()#UNCOMENT
-                linec = linec + 1
-            elif (linec == 3):
-                #poseT = ser.readline()#UNCOMENT
-                linec = linec + 1
-            elif (linec == 4):
-                #speedV = ser.readline()#UNCOMENT
-                linec = linec + 1
-            elif (linec == 5):
-                #speedO = ser.readline()#UNCOMENT
-                linec = 0
+            while(linec <6):
+                if (linec == 0):  #IF MUST READ ON SAME CICLE include while linec <6 and set linec to 0 after that
+                    robotStatusVerif = ser.readline()#UNCOMENT
+                    #robotStatusVerif = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8")) #UNCOMENT?
+                    linec = linec + 1
+                elif (linec == 1):
+                    poseX = ser.readline()#UNCOMENT
+                    linec = linec + 1
+                elif (linec == 2):
+                    poseY = ser.readline()#UNCOMENT
+                    linec = linec + 1
+                elif (linec == 3):
+                    poseT = ser.readline()#UNCOMENT
+                    linec = linec + 1
+                elif (linec == 4):
+                    speedV = ser.readline()#UNCOMENT
+                    linec = linec + 1
+                elif (linec == 5):
+                    speedO = ser.readline()#UNCOMENT
+                    linec = linec+1
+            linec = 0
             print("open?")
             #decoded_bytes = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))  #UNCOMENT
             #print(decoded_bytes)
@@ -196,21 +203,21 @@ def updater():
 
             '''
             if decoded_bytes[0] == '0':
-                robotStatus = 'Aguardando'          
+                robotStatus = 'Aguardando'
             elif decoded_bytes[0] == '1':
                 print(decoded_bytes)
-                robotStatus = 'Movimentando'   
+                robotStatus = 'Movimentando'
                 poseX = float(decoded_bytes[2:9])
                 poseY = float(decoded_bytes[10:17])
                 poseT = float(decoded_bytes[18:25])
                 speedV = float(decoded_bytes[26:33])
-                #speedO = float(decoded_bytes[34:41])     
+                #speedO = float(decoded_bytes[34:41])
             elif decoded_bytes[0] == '2':
                 robotStatus = 'Rotacionando'
                 poseX = float(decoded_bytes[2:9])
                 poseY = float(decoded_bytes[10:17])
                 poseT = float(decoded_bytes[18:25])
-                speedO = float(decoded_bytes[34:41])    
+                speedO = float(decoded_bytes[34:41])
             else:
                 print('Invalid Command')
             '''
@@ -237,7 +244,7 @@ def updater():
         temp4 = servidorUdp.flys[3].temps[49]
 
         #Update Robot Data
-        
+
         robotStatusL = tkinter.Label (box1, anchor = 'w', text = "Status de Rob:"+'%s' %(robotStatus), padx = 2)
         #decoded_bytes = ('1-325.548')
         #speedX = float(decoded_bytes[2]+decoded_bytes[3]+decoded_bytes[4]+decoded_bytes[5]+decoded_bytes[6]+decoded_bytes[7]+decoded_bytes[8])
@@ -247,10 +254,10 @@ def updater():
         poseXValue = tkinter.Label(robotDataBox, text = '%s' % (poseX))
         poseYValue = tkinter.Label(robotDataBox, text = '%s' % (poseY))
         poseTValue = tkinter.Label(robotDataBox, text = '%s' % (poseT))
-        #speedTValue = tkinter.Label(robotDataBox, text = '%s' % (speedT))  
+        #speedTValue = tkinter.Label(robotDataBox, text = '%s' % (speedT))
 
         #Update Temp Data
-                
+
         temp1Value = tkinter.Label(tempDataBox, text = '%s' % (temp1))
         temp2Value = tkinter.Label(tempDataBox, text = '%s' % (temp2))
         temp3Value = tkinter.Label(tempDataBox, text = '%s' % (temp3))
@@ -274,7 +281,7 @@ def updater():
         temp4Value.grid(row = 4, column = 2, sticky = 'E')
 
         #write coordenates to serials here
-        
+
 #Updater End
 
 #Serial Updater
@@ -426,9 +433,9 @@ def graph():
         ax14.set_title('Velocidade T')
         ax14.set(xlabel='Tempo (s)',ylabel = 'Velocidade T')
     ani1 = animation.FuncAnimation(fig, animate1, interval=1000)
-    
+
     ani2 = animation.FuncAnimation(fig2, animate2, interval=1000)
-    
+
     ani3 = animation.FuncAnimation(fig3, animate3, interval=1000)
     plt.show()
 
@@ -472,8 +479,8 @@ def graph():
     plt.axis([timeB[0], timeB[49], 20, 40])
     print ('sfd')
     #plt.figure(5)
-    ax5 = fig.add_subplot(335)    
-    plt.title('Velocidade V/t')    
+    ax5 = fig.add_subplot(335)
+    plt.title('Velocidade V/t')
     #ax5.plot(timeB,speedSV)
     plt.xlabel('tempo(s)')
     plt.ylabel('VelV')
@@ -514,52 +521,52 @@ def graph():
     plt.axis([timeB[0], timeB[49], 20, 40])
     plt.tight_layout()
     #fig.axis.clear()
-    
+
     while(1):
         print ('entratemps')
         servidorUdp.mostraTemps()
-        
+
         print ('entratemps')
         ax1.plot(timeB,servidorUdp.flys[1].temps)
         ax1.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-        
+
         ax2.plot(timeB,servidorUdp.flys[1].temps)
         ax2.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-   
+
         ax3.plot(timeB,servidorUdp.flys[0].temps)
         ax3.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-   
+
         ax4.plot(timeB,servidorUdp.flys[0].temps)
         ax4.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-   
+
         ax5.plot(timeB,servidorUdp.flys[0].temps)
         ax5.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-   
+
         ax6.plot(timeB,servidorUdp.flys[0].temps)
         ax6.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-   
+
         ax7.plot(timeB,servidorUdp.flys[0].temps)
         ax7.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-   
+
         ax8.plot(timeB,servidorUdp.flys[0].temps)
         ax8.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
         #plt.pause(1)
-   
+
         ax9.plot(timeB,servidorUdp.flys[0].temps)
         ax9.axis([timeB[0], timeB[49], 20, 40])
         fig.canvas.draw()
@@ -569,7 +576,7 @@ def graph():
         '''
     print('end')
 
-    
+
 #Receiving Data
 
     #def receivingStatus():
@@ -577,16 +584,16 @@ def graph():
     #def receivingPosition():
 
     #def receivingSpeed():
-       
 
-    
+
+
 # Code to add widgets will go here...
 
 #Button Commands
 
 def openManual():
     manualW = tkinter.Toplevel()
-    manualW.title('Operação Manual')
+    manualW.title('Operacao Manual')
     top.resizable(width = 0, height = 0)
     top.withdraw()
     #manualOn=(True)
@@ -605,17 +612,17 @@ def openManual():
         recievedPoseX = float(e1.get())
         #recievedPoseY = float(e2.get())
         recievedPoseT = float(e3.get())
-        
+
         #speedV = float(e1.get()) #DEBUGGING
         decoded_bytes = str(e2.get())
-        
+
         print('adsdasd %s' % decoded_bytes)
         #check if float, and size, if True and acceptable send
-        
+
         print('value a: %s \nvalue b: %s' % (recievedPoseX, recievedPoseT))
 
     #Manual Window
-      
+
         #Labels
 
     iControlL = tkinter.Label (manualW, anchor = 'w', text = "Inserir TODOS os valores de controle:" , padx = 2)
@@ -633,7 +640,7 @@ def openManual():
 
     send = tkinter.Button(manualW, borderwidth = 3, width = 15, height = 1, text = 'Send', pady = 2 , padx = 3, command = input)
 
-    
+
         #Positioning Manual
 
     iControlL.grid(row = 1, column = 1, pady = 2, padx = 3, sticky = 'W')
@@ -645,13 +652,13 @@ def openManual():
     e3.grid(row = 4, column = 2, pady = 2, padx = 3, sticky = 'E')
     send.grid(row = 5, column = 2, pady = 4, padx = 5, sticky = 'E')
 
-    
+
     manualW.protocol("WM_DELETE_WINDOW", close)
 
 #Map
- 
+
 def map():
-    
+
     #mapW = tkinter.Toplevel()
     #mapW.title('Mapa Temp')
     #top.resizable(width = 0, height = 0)
@@ -685,7 +692,7 @@ def map():
     for z in range (1,17):
         b = a[z-1][0] - a[z-1][15]
         b = b/15
-        
+
         for i in range(1,15):
             #b = a[0][0] - a[0][15]
             #b = b/invz
@@ -695,9 +702,9 @@ def map():
         if z!=16:
             a[z][0] = a[z-1][0]-c
             a[z][15] = a[z-1][15]-d
-        print (a)   
+        print (a)
         print (z)
-        
+
     plt.imshow(a, cmap='hot', interpolation='catrom')
     plt.show()
     '''
@@ -726,21 +733,22 @@ def map():
     plt.pcolormesh(X,Y,Z)
     plt.show()
     '''
-    
+
 
 #########################//#########################//####################//#####################//########################//###############
 #Root Commands
 
 thread = threading.Thread(target=updater)
 thread.daemon = True                            # Daemonize thread
-thread.start() 
+thread.start()
 
-threadTemp =threading.Thread(target=servidorUdp.iniciaLeitura,args=(),daemon=False)
+threadTemp =threading.Thread(target=servidorUdp.iniciaLeitura,args=())
+#thread.daemon=False
 threadTemp.start()
 '''
 thread = threading.Thread(target=serialUpdater)
 thread.daemon = True                            # Daemonize thread
-thread.start() 
+thread.start()
 '''
     #Buttons
 
@@ -759,7 +767,7 @@ box2 = tkinter.Frame(top, borderwidth = 2, width = 250, height = 300, relief = '
             #Box1
 
 robotDataBox = tkinter.Frame(box1, borderwidth = 2 , width = 250, height = 140 , relief = 'ridge', pady = 2, padx =3)
-robotDataBox.grid_propagate(1)        
+robotDataBox.grid_propagate(1)
 tempDataBox = tkinter.Frame(box1, borderwidth = 2 , width = 250, height = 95 , relief = 'ridge', pady = 2, padx =3)
 tempDataBox.grid_propagate(1)
 
@@ -849,10 +857,10 @@ temp3Value.grid(row = 3, column = 2, sticky = 'E')
 temp4Value.grid(row = 4, column = 2, sticky = 'E')
 
             #box2
-    
+
 photoF.grid(row = 1, column = 2, sticky = 'E')
 
-        
+
 
 
 
@@ -866,4 +874,3 @@ top.mainloop()
 ###########################################################################################
 
 #End GUI
-
