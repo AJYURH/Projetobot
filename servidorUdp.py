@@ -10,7 +10,22 @@ HOST = '192.168.43.47'
 PORT = 5555
 DATASIZE = 50
 
+STATUS_FILTER = True
+WINDOW_LEN = 11
+w = numpy.hamming(WINDOW_LEN)
 
+
+
+
+
+#Listas de objetos flY e IPS
+flys = []
+clientesIPs = []
+
+#um socket para cada clienteFlyport
+server_addr = (HOST, PORT)
+server_socket  = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+server_socket.bind(server_addr)
 
 class Flyport:
     def __init__(self,id):
@@ -26,16 +41,14 @@ class Flyport:
         self.temps = numpy.append(self.temps[1:DATASIZE],temp) 
         #self.temps.append(temp)
 
+    def filtraTemps(self):
+        s=numpy.r_[self.temps[WINDOW_LEN-1:0:-1],self.temps,self.temps[-2:-WINDOW_LEN-1:-1]]
+        j = numpy.convolve(w/w.sum(),s,mode='valid')
+        self.temps = j[5:len(j)-5]
+        
 
 
-#Listas de objetos flY e IPS
-flys = []
-clientesIPs = []
 
-#um socket para cada clienteFlyport
-server_addr = (HOST, PORT)
-server_socket  = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-server_socket.bind(server_addr)
 
 def atualizaTemperatura(cliente,msg_temp):
     #mostraTemps()
@@ -43,10 +56,13 @@ def atualizaTemperatura(cliente,msg_temp):
     temp  = float(msg_temp[3:10])
     for fly in flys:
         if(fly.statusRun ==True and fly.ip ==  cliente):
-            fly.temps = numpy.append(fly.temps[1:DATASIZE],temp) 
-#            fly.temps.append(temp)
-#            if(fly.temps.__len__()>10):
-#                fly.temps.pop(0)
+            fly.temps = numpy.append(fly.temps[1:DATASIZE],temp)
+            #filtras
+            if(STATUS_FILTER):
+                fly.filtraTemps()
+            
+
+#            
             return
         elif fly.statusRun == False :
             fly.setIpTemp(cliente,temp)
@@ -68,7 +84,7 @@ def iniciaLeitura():
 
     while True:
         msg, cliente = server_socket.recvfrom(1024)
-        if cliente not in clientesIPs:
+        if cliente[0] not in clientesIPs:
             clientesIPs.append(cliente[0])
         atualizaTemperatura(cliente[0], msg)
 
